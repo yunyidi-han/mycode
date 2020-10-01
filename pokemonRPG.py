@@ -5,8 +5,8 @@ from random import randint
 # Making a pokemon battle game, objective is to level up enough to defeat the Gym Leader in Vermillion Gym
 
 def showInstructions():
-  #print a main menu and the commands
-  print('''
+    #print a main menu and the commands
+    print('''
 Welcome to Pokemon!
 ========
 Commands:
@@ -20,15 +20,15 @@ Defeat Wild Pokemon, get items, level up!
 ''')
 
 def showStatus():
-  #print the player's current status
-  print('---------------------------')
-  print('You are in the ' + currentRoom)
-  #print the current inventory
-  print('Inventory : ' + str(inventory))
-  #print an item if there is one
-  if "item" in rooms[currentRoom]:
-    print('You see a ' + rooms[currentRoom]['item'])
-  print("---------------------------")
+    #print the player's current status
+    print('---------------------------')
+    print('You are in the ' + currentRoom)
+    #print the current inventory
+    print('Inventory : ' + str(inventory))
+    #print an item if there is one
+    if "item" in rooms[currentRoom]:
+        print('You see ' + rooms[currentRoom]['item'])
+    print("---------------------------")
 
 #an inventory, which is initially empty
 inventory = []
@@ -60,17 +60,19 @@ def playerTurn(player,enemyPokemon):
     if action == 'attack':
         move = ''
         while move not in player.get_moveSet.keys(): #gotta validate this works
-            move = input(f"What move do you want to use {player.get_moveSet}? >"
+            move = input(f"What move do you want to use {player.get_moveSet}? >")
 #left off around here... :< sad day        
 
 def enemyTurn(player,enemyPokemon):
+    pass
 
 
     
 #bunch of classes and subclasses for player/enemies
 #base player stats
 class Pokemon():
-    def __init__(self,level,element):
+    def __init__(self,name,level,element):
+        self.name = name
         self.level = level
         self.element = element
         self.hp = self.level * 10
@@ -79,7 +81,10 @@ class Pokemon():
     
     def get_hp(self):
         return self.hp
-        
+    
+    def get_name(self):
+        return self.name
+    
     def get_level(self):
         return self.level
     
@@ -88,6 +93,9 @@ class Pokemon():
     
     def get_moveSet(self):
         return self.moveSet
+        
+    def use_nurse(self):
+        self.hp = self.level * 10
 
     def use_potion(self):
         if 'potion' in inventory:
@@ -106,7 +114,12 @@ class Pokemon():
 #next 3 subclasses are for players to pick
 class Baulbasaur(Pokemon):
     def __init__(self):
+        self.name = "Baulbasaur"
         self.element = 'grass'
+        self.level = 5
+        self.hp = self.level * 10
+        self.experience = 0
+        self.moveSet = [{'Tackle': 10}]
         self.damageUp = ['ground','water']
         self.damageDown = ['flying','fire']
                 
@@ -122,7 +135,12 @@ class Baulbasaur(Pokemon):
 
 class Charmander(Pokemon):
     def __init__(self):
+        self.name = "Charmander"
         self.element = 'fire'
+        self.level = 5
+        self.hp = self.level * 10
+        self.experience = 0
+        self.moveSet = [{'Tackle': 10}]
         self.damageUp = ['grass']
         self.damageDown = ['water','ground']
                 
@@ -138,7 +156,12 @@ class Charmander(Pokemon):
 
 class Squirtle(Pokemon):
     def __init__(self):
+        self.name = "Squirtle"
         self.element = 'water'
+        self.level = 5
+        self.hp = self.level * 10
+        self.experience = 0
+        self.moveSet = [{'Tackle': 10}]
         self.damageUp = ['fire','ground']
         self.damageDown = ['grass']
                 
@@ -184,82 +207,89 @@ rooms = {
                },
             'Vermillion Gym' : {
                   'south' : 'Forest',
-                  'item' : 'Gym Leader',
+                  'item' : 'Gym Leader Didi',
             }
          }
 
 #start the player in the Hall
-currentRoom = 'Oak\'s Lab'
+
 
 def pickPokemon():
     player1 = ''
     print("La la de da some text to introduce the game")
     starter = input("Which starter do you choose? [Baulbasaur, Charmander, Squirtle] > ").lower()
-        if starter == 'charmander':
-            player1 = 
+    if starter == 'charmander':
+        return Charmander()
+    elif starter == 'baulbasaur':
+        return Baulbasaur()
+    elif starter == 'squirtle':
+        return Squirtle()
 
 
 
 #loop forever
-main():
+def main():
+    global currentRoom 
+    currentRoom = 'Oak\'s Lab'
     showInstructions()
-    pickPokemon()
+    player = pickPokemon()
     while True:
 
-      showStatus()
+        showStatus()
+        
+        win = 0
 
       #get the player's next 'move'
       #.split() breaks it up into an list array
       #eg typing 'go east' would give the list:
       #['go','east']
-      move = ''
-      while move == '':
-        move = input('>')
+        move = ''
+        while move == '':
+            move = input('>')
 
       # split allows an items to have a space on them
       # get golden key is returned ["get", "golden key"]          
-      move = move.lower().split(" ", 1)
+        move = move.lower().split(" ", 1)
 
       #if they type 'go' first
-      if move[0] == 'go':
+        if move[0] == 'go':
         #check that they are allowed wherever they want to go
-        if move[1] in rooms[currentRoom]:
+            if move[1] in rooms[currentRoom]:
           #set the current room to the new room
-          currentRoom = rooms[currentRoom][move[1]]
+                currentRoom = rooms[currentRoom][move[1]]
         #there is no door (link) to the new room
-        else:
-            print('You can\'t go that way!')
+            else:
+                print('You can\'t go that way!')
 
       #if they type 'get' first
-      if move[0] == 'get' :
+        if move[0] == 'talk' :
         #if the room contains an item, and the item is the one they want to get
-        if "item" in rooms[currentRoom] and move[1] in rooms[currentRoom]['item']:
-          #add the item to their inventory
-          inventory += [move[1]]
-          #display a helpful message
-          print(move[1] + ' got!')
-          #delete the item from the room
-          del rooms[currentRoom]['item']
-        #otherwise, if the item isn't there to get
-        else:
+            if move[1] in rooms[currentRoom]['item'].lower() and move[1] == 'prof oak':
+                talkOak()
+            elif move[1] in rooms[currentRoom]['item'].lower() and move[1] == 'nurse joy':
+                talkJoy(player)
+            elif move[1] in rooms[currentRoom]['item'].lower() and move[1] == 'wild pokemon':
+                fightPokemon()
+            elif move[1] in rooms[currentRoom]['item'].lower() and move[1] == 'rare pokemon':
+                fightRare()
+            elif move[1] in rooms[currentRoom]['item'].lower() and move[1] == 'gym leader didi':
+                win = fightDidi()
+            else:
           #tell them they can't get it
-          print('Can\'t get ' + move[1] + '!')
-          
-      ## Define how a player can win
-      if currentRoom == 'Garden' and 'key' in inventory and 'potion' in inventory:
-        print('You escaped the house with the ultra rare key and magic potion... YOU WIN!')
-        break
-      
-      ## If a player enters a room with a monster BUT HAS A COOKIE
-      if 'item' in rooms[currentRoom] and 'monster' in rooms[currentRoom]['item'] and 'cookie' in inventory:
-        print('The monster takes your cookie and runs away! Whew!')
-        del rooms[currentRoom]['item']
-        inventory.remove('cookie')
+                print('Can\'t talk to ' + move[1] + '!')
 
-      ## If a player enters a room with a monster
-      elif 'item' in rooms[currentRoom] and 'monster' in rooms[currentRoom]['item']:
-        print('A monster has got you... GAME OVER!')
-        break
+def talkOak():
+    print(f"Prof Oak seems kinda pissed he had to give you a free Pokemon, he doesn't want to talk")
+    
+def talkJoy(player):
+    heal = input(f"Hey Pokemon Trainer! Want to heal your Pokemon to full? Y/N > ").lower()
+    if heal == 'y':
+        player.use_nurse
+        print(f"{player.get_name} was healed to full! HP is {player.get_hp}")
+    else:
+        print("Why did you even come here... :[")
+          
+      
         
 if __name__ == "__main__":
     main()
