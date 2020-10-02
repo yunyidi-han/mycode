@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-from random import randint 
+import random
 
 # Yunyidi Han
 # Making a pokemon battle game, objective is to level up enough to defeat the Gym Leader in Vermillion Gym
@@ -19,13 +19,14 @@ Vermillion Gym Leader!
 Defeat Wild Pokemon, get items, level up!
 ''')
 
-def showStatus():
+def showStatus(player):
     #print the player's current status
     print('---------------------------')
     print('You are in the ' + currentRoom)
     #print the current inventory
     print('Inventory : ' + str(inventory))
     #print an item if there is one
+    print(f'Level {player.level} {player.name}: Type-{player.element}, HP-{player.hp}/{player.level*10}, XP-{player.experience}/20, moves:{player.get_moveSet()}') 
     if "item" in rooms[currentRoom]:
         print('You see ' + rooms[currentRoom]['item'])
     print("---------------------------")
@@ -33,33 +34,41 @@ def showStatus():
 #an inventory, which is initially empty
 inventory = []
 
-enemies = [{'Onyx':'ground'},{'Pigdy':'flying'},{'Bellsprout':'grass'},{'Growlith':'fire'},{'Psyduck':'water'}]
+enemies = {'Onyx':'ground','Pigdy':'flying','Bellsprout':'grass','Growlith':'fire','Psyduck':'water'}
 
 
 #combat script using methods, passed into it the player, enemy from above, and element for that enemy
 def combat(player,enemy,element):
-    enemyPokemon = Pokemon(randint(2,4),element)
+    enemyPokemon = Pokemon(enemy,random.randint(2,4),element)
+    print(f"You're fighting a {enemyPokemon.get_level()} {enemy}! It's type is {element}!")
 
-    while enemyPokemon.get_hp > 0 and player.get_hp > 0:
-        if player.get_hp > 0:
+    while enemyPokemon.get_hp() > 0 and player.get_hp() > 0:
+        
+        if player.get_hp() > 0:
             playerTurn(player,enemyPokemon)
         else: 
             return False
         
-        if enemyPokemon.get_hp > 0:
-            enemy(turn)
+        if enemyPokemon.get_hp() > 0:
+            enemyTurn()
         else:
-            xp = randint(7,13)
-            print(f"You defeated a level {enemyPokemon.get_level} {enemy} and gained {xp} exp!")
+            xp = random.randint(7,13)
+            print(f"You defeated a level {enemyPokemon.get_level()} {enemy} and gained {xp} exp!")
             player.get_exp(xp)
             return(True)
 
 
 def playerTurn(player,enemyPokemon):
+    print(f'Level {player.level} {player.name}: Type-{player.element}, HP-{player.hp}/{player.level*10}, XP-{player.experience}/20, moves:{player.get_moveSet()}') 
     action = input("Do you want to [attack] or use an [item]? >").lower()
     if action == 'attack':
         move = ''
-        while move not in player.get_moveSet.keys(): #gotta validate this works
+        if move in player.get_moveSet(): #gotta validate this works
+            index = player.moveSet.keys().index(move)
+            dmg = player.moveSet[index][move]
+            enemyPokemon.hp = enemyPokemon.hp - dmg
+            print(f"{enemyPokemon} took {dmg} damage!")
+        else:
             move = input(f"What move do you want to use {player.get_moveSet}? >")
 #left off around here... :< sad day        
 
@@ -80,19 +89,24 @@ class Pokemon():
         self.moveSet = [{'Tackle': 10}]
     
     def get_hp(self):
-        return self.hp
+        return int(self.hp)
+        #print(self.hp)
     
     def get_name(self):
-        return self.name
+        return str(self.name)
+        #print(self.name)
     
     def get_level(self):
-        return self.level
+        return int(self.level)
+        #print(self.level)
     
     def get_element(self):
-        return self.element
+        return str(self.element)
+        #print(self.element)
     
     def get_moveSet(self):
-        return self.moveSet
+        return str(self.moveSet)
+        #print(self.moveSet)
         
     def use_nurse(self):
         self.hp = self.level * 10
@@ -114,12 +128,12 @@ class Pokemon():
 #next 3 subclasses are for players to pick
 class Baulbasaur(Pokemon):
     def __init__(self):
-        self.name = "Baulbasaur"
-        self.element = 'grass'
-        self.level = 5
-        self.hp = self.level * 10
-        self.experience = 0
-        self.moveSet = [{'Tackle': 10}]
+        super().__init__("Baulbasaur",5,"grass")
+        #self.element = 'grass'
+        #self.level = 5
+        #self.hp = self.level * 10
+        #self.experience = 0
+        #self.moveSet = [{'Tackle': 10}]
         self.damageUp = ['ground','water']
         self.damageDown = ['flying','fire']
                 
@@ -135,12 +149,13 @@ class Baulbasaur(Pokemon):
 
 class Charmander(Pokemon):
     def __init__(self):
-        self.name = "Charmander"
-        self.element = 'fire'
-        self.level = 5
-        self.hp = self.level * 10
-        self.experience = 0
-        self.moveSet = [{'Tackle': 10}]
+        super().__init__("Charmander",5,"fire")
+        #self.name = "Charmander"
+        #self.element = 'fire'
+        #self.level = 5
+        #self.hp = self.level * 10
+        #self.experience = 0
+        #self.moveSet = [{'Tackle': 10}]
         self.damageUp = ['grass']
         self.damageDown = ['water','ground']
                 
@@ -156,12 +171,13 @@ class Charmander(Pokemon):
 
 class Squirtle(Pokemon):
     def __init__(self):
-        self.name = "Squirtle"
-        self.element = 'water'
-        self.level = 5
-        self.hp = self.level * 10
-        self.experience = 0
-        self.moveSet = [{'Tackle': 10}]
+        super().__init__("Squirtle",5,"water")
+        #self.name = "Squirtle"
+        #self.element = 'water'
+        #self.level = 5
+        #self.hp = self.level * 10
+        #self.experience = 0
+        #self.moveSet = [{'Tackle': 10}]
         self.damageUp = ['fire','ground']
         self.damageDown = ['grass']
                 
@@ -235,7 +251,7 @@ def main():
     player = pickPokemon()
     while True:
 
-        showStatus()
+        showStatus(player)
         
         win = 0
 
@@ -269,7 +285,12 @@ def main():
             elif move[1] in rooms[currentRoom]['item'].lower() and move[1] == 'nurse joy':
                 talkJoy(player)
             elif move[1] in rooms[currentRoom]['item'].lower() and move[1] == 'wild pokemon':
-                fightPokemon()
+                
+                enemy = random.choice(list(enemies))
+                ele = enemies[enemy]
+                print(f"You try to talk to the wild {enemy}... it attacks!")
+                combat(player,enemy,ele)
+                
             elif move[1] in rooms[currentRoom]['item'].lower() and move[1] == 'rare pokemon':
                 fightRare()
             elif move[1] in rooms[currentRoom]['item'].lower() and move[1] == 'gym leader didi':
@@ -285,11 +306,11 @@ def talkJoy(player):
     heal = input(f"Hey Pokemon Trainer! Want to heal your Pokemon to full? Y/N > ").lower()
     if heal == 'y':
         player.use_nurse
-        print(f"{player.get_name} was healed to full! HP is {player.get_hp}")
+        print(f"{player.get_name()} was healed to full! HP is {player.get_hp()}")
     else:
         print("Why did you even come here... :[")
           
       
         
 if __name__ == "__main__":
-    main()
+    main() 
