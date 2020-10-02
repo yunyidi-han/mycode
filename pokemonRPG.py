@@ -45,7 +45,10 @@ def combat(player,enemy,element):
     while enemyPokemon.get_hp() > 0 and player.get_hp() > 0:
         
         if player.get_hp() > 0:
-            playerTurn(player,enemyPokemon)
+            ran = playerTurn(player,enemyPokemon)
+            if ran == 'run':
+                print(f"You ran away!")
+                break
         else: 
             return False
         
@@ -60,7 +63,7 @@ def combat(player,enemy,element):
 
 def playerTurn(player,enemyPokemon):
     print(f'Level {player.level} {player.name}: Type-{player.element}, HP-{player.hp}/{player.level*10}, XP-{player.experience}/20, moves:{player.get_moveSet()}') 
-    action = input("Do you want to [attack] or use an [item]? >").lower()
+    action = input("Do you want to [attack], use an [item], or [run]? >").lower()
     if action == 'attack':
         move = ''
         if move in player.get_moveSet(): #gotta validate this works
@@ -70,6 +73,8 @@ def playerTurn(player,enemyPokemon):
             print(f"{enemyPokemon} took {dmg} damage!")
         else:
             move = input(f"What move do you want to use {player.get_moveSet}? >")
+    elif action == 'run':
+        return "run"
 #left off around here... :< sad day        
 
 def enemyTurn(player,enemyPokemon):
@@ -313,4 +318,4 @@ def talkJoy(player):
       
         
 if __name__ == "__main__":
-    main() 
+    main()
